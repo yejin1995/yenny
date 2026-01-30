@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soft Rounded Icons</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px 20px;
+            margin-left: 260px;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: white;
+            box-shadow: 5px 0 30px rgba(0, 0, 0, 0.1);
+            padding: 30px 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #999;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .category-list {
+            list-style: none;
+        }
+
+        .category-item {
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .category-item:hover {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .category-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .category-item .count {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        .category-item.active .count {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 40px;
+        }
+
+        .search-box {
+            max-width: 400px;
+            margin: 0 auto 40px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            outline: none;
+        }
+
+        .icons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 20px;
+        }
+
+        .icon-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .icon-card svg {
+            width: 40px;
+            height: 40px;
+            color: #333;
+        }
+
+        .icon-card span {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        .icon-card.copied {
+            background: #10b981;
+        }
+
+        .icon-card.copied svg {
+            color: white;
+        }
+
+        .icon-card.copied span {
+            color: white;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .current-category {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 18px;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .no-results {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 60px 20px;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="category-list" id="categoryList"></ul>
+        </aside>
+
+        <div class="main-content">
+            <div class="container">
+                <h1>Soft Rounded Icons</h1>
+                <p class="subtitle">Click any icon to copy SVG code</p>
+
+                <div class="search-box">
+                    <input type="text" id="search" placeholder="Search icons...">
+                </div>
+
+                <p class="current-category" id="currentCategory">All Icons</p>
+
+                <div class="icons-grid" id="iconsGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Copied to clipboard!</div>
+
+    <script>
+        const categories = [
+            { id: 'all', name: 'All' },
+            { id: 'navigation', name: 'Navigation' },
+            { id: 'accounts', name: 'Accounts & Access' },
+            { id: 'communication', name: 'Communication' },
+            { id: 'media', name: 'Media' },
+            { id: 'files', name: 'Files & Folders' },
+            { id: 'interface', name: 'Interface' },
+            { id: 'arrows', name: 'Arrows' },
+            { id: 'devices', name: 'Devices' },
+            { id: 'shapes', name: 'Shapes' },
+            { id: 'status', name: 'Status' },
+            { id: 'weather', name: 'Weather' },
+            { id: 'commerce', name: 'Commerce' },
+            { id: 'development', name: 'Development' }
+        ];
+
+        // Soft Rounded Icon Set - Original designs
+        const icons = [
+            // Navigation
+            { name: "Home", category: "navigation", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-7 9 7"/><path d="M4 9v11a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9"/><rect x="9" y="13" width="6" height="8" rx="0.5"/></svg>` },
+            { name: "Location", category: "navigation", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C7.5 2 4 5.5 4 9.5c0 5.5 8 12.5 8 12.5s8-7 8-12.5C20 5.5 16.5 2 12 2z"/><circle cx="12" cy="9.5" r="3"/></svg>` },
+            { name: "Globe", category: "navigation", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><ellipse cx="12" cy="12" rx="4" ry="10"/><path d="M2 8q10 4 20 0"/><path d="M2 16q10 -4 20 0"/></svg>` },
+            { name: "Compass", category: "navigation", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8l-5.5 3L8 16l5.5-3L16 8z"/></svg>` },
+            { name: "Map", category: "navigation", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5l7-2 6 2 7-2v17l-7 2-6-2-7 2V5z"/><path d="M9 3v17"/><path d="M15 5v17"/></svg>` },
+            { name: "Navigation", category: "navigation", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 18-9-5-9 5 9-18z"/></svg>` },
+            { name: "Signpost", category: "navigation", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M5 6h12l2.5 3-2.5 3H5V6z"/><path d="M19 14H7l-2.5 3 2.5 3h12v-6z"/></svg>` },
+
+            // Accounts & Access
+            { name: "User", category: "accounts", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="5"/><path d="M3 21c0-4.5 4-8 9-8s9 3.5 9 8"/></svg>` },
+            { name: "Users", category: "accounts", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="7" r="4"/><path d="M1 21c0-4 3.5-7 7-7s7 3 7 7"/><circle cx="17" cy="7" r="4"/><path d="M23 21c0-4-3.5-7-6-7"/></svg>` },
+            { name: "User Plus", category: "accounts", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="7" r="5"/><path d="M2 21c0-4.5 3.5-8 8-8s8 3.5 8 8"/><path d="M20 7v6"/><path d="M17 10h6"/></svg>` },
+            { name: "User Minus", category: "accounts", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="7" r="5"/><path d="M2 21c0-4.5 3.5-8 8-8s8 3.5 8 8"/><path d="M17 10h6"/></svg>` },
+            { name: "User Check", category: "accounts", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="7" r="5"/><path d="M2 21c0-4.5 3.5-8 8-8s8 3.5 8 8"/><path d="M16 10l2 2 5-5"/></svg>` },
+            { name: "Lock", category: "accounts", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="10" width="18" height="12" rx="3"/><path d="M7 10V6c0-2.8 2.2-5 5-5s5 2.2 5 5v4"/><circle cx="12" cy="16" r="2"/></svg>` },
+            { name: "Unlock", category: "accounts", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="10" width="18" height="12" rx="3"/><path d="M7 10V6c0-2.8 2.2-5 5-5s5 2.2 5 5"/><circle cx="12" cy="16" r="2"/></svg>` },
+            { name: "Key", category: "accounts", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="16.5" r="5"/><path d="M11 13l10-10"/><path d="M21 3l-3.5 3.5"/><path d="M17.5 6.5l-3.5 3.5"/></svg>` },
+            { name: "Shield", category: "accounts", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-4 0-9 1.5-9 1.5v9c0 6 9 10 9 10s9-4 9-10v-9S16 2 12 2z"/></svg>` },
+            { name: "Log In", category: "accounts", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2h5a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2h-5"/><path d="M12 12H2"/><path d="M6 8l-4 4 4 4"/></svg>` },
+            { name: "Log Out", category: "accounts", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2H5a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h5"/><path d="M12 12h10"/><path d="M18 8l4 4-4 4"/></svg>` },
+
+            // Communication
+            { name: "Mail", category: "communication", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M2 6l10 7 10-7"/></svg>` },
+            { name: "Mail Open", category: "communication", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-7 10 7v11a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9z"/><path d="M2 9l10 7 10-7"/></svg>` },
+            { name: "Phone", category: "communication", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h5l2 5-3.5 2.5c1.5 3.5 4 6 7.5 7.5l2.5-3.5 5 2v5c0 1-1 2-2 2C9 22 2 15 2 5c0-1 1-2 2-2z"/></svg>` },
+            { name: "Message", category: "communication", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H7l-4 4V5z"/></svg>` },
+            { name: "Message Circle", category: "communication", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c5.5 0 10 4 10 9s-4.5 9-10 9c-1.5 0-3-.3-4.5-.9L2 22l2-5.5C2.5 14.5 2 12.8 2 11c0-5 4.5-9 10-9z"/></svg>` },
+            { name: "Send", category: "communication", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2l20 10-20 10 4-10-4-10z"/><path d="M6 12h10"/></svg>` },
+            { name: "Share", category: "communication", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="4" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="20" r="3"/><path d="M9 10.5l6-4"/><path d="M9 13.5l6 4"/></svg>` },
+            { name: "Bell", category: "communication", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-4 0-7 3-7 7v5l-2 3h18l-2-3V9c0-4-3-7-7-7z"/><path d="M9 20c0 1.5 1.5 3 3 3s3-1.5 3-3"/></svg>` },
+            { name: "Bell Off", category: "communication", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9c0-4-3-7-7-7-1.5 0-3 .5-4.2 1.3"/><path d="M5 9v5l-2 3h14"/><path d="M9 20c0 1.5 1.5 3 3 3s3-1.5 3-3"/><path d="M2 2l20 20"/></svg>` },
+            { name: "Inbox", category: "communication", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="3"/><path d="M2 14h6l2 3h4l2-3h6"/></svg>` },
+
+            // Media
+            { name: "Image", category: "media", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="7.5" cy="7.5" r="2"/><path d="M22 16l-6-6-10 10"/></svg>` },
+            { name: "Video", category: "media", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="15" height="16" rx="3"/><path d="M16 8l6-4v16l-6-4V8z"/></svg>` },
+            { name: "Camera", category: "media", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7a2 2 0 0 1 2-2h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7z"/><circle cx="12" cy="13" r="4.5"/></svg>` },
+            { name: "Music", category: "media", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="18" r="3"/><circle cx="19" cy="14" r="3"/><path d="M8 18V5l14-3v12"/></svg>` },
+            { name: "Mic", category: "media", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="1" width="10" height="14" rx="5"/><path d="M4 10v2c0 4.5 3.5 8 8 8s8-3.5 8-8v-2"/><path d="M12 20v3"/><path d="M7 23h10"/></svg>` },
+            { name: "Volume", category: "media", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9v6h4l6 6V3L6 9H2z"/><path d="M16 8c2 2 2 6 0 8"/><path d="M19 5c3.5 3.5 3.5 10.5 0 14"/></svg>` },
+            { name: "Volume Off", category: "media", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9v6h4l6 6V3L6 9H2z"/><path d="M16 9l6 6"/><path d="M22 9l-6 6"/></svg>` },
+            { name: "Play", category: "media", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l16 9-16 9V3z"/></svg>` },
+            { name: "Pause", category: "media", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="6" height="18" rx="1"/><rect x="14" y="3" width="6" height="18" rx="1"/></svg>` },
+            { name: "Stop", category: "media", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>` },
+            { name: "Skip Back", category: "media", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4v16l-12-8 12-8z"/><path d="M4 4v16"/></svg>` },
+            { name: "Skip Forward", category: "media", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16l12-8-12-8z"/><path d="M20 4v16"/></svg>` },
+
+            // Files & Folders
+            { name: "File", category: "files", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7l-7-5H4z"/><path d="M14 2v6h6"/></svg>` },
+            { name: "File Text", category: "files", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7l-7-5H4z"/><path d="M14 2v6h6"/><path d="M6 13h12"/><path d="M6 17h8"/></svg>` },
+            { name: "Folder", category: "files", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6a2 2 0 0 1 2-2h5l2 2h9a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6z"/></svg>` },
+            { name: "Folder Open", category: "files", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6a2 2 0 0 1 2-2h5l2 2h9a2 2 0 0 1 2 2v1H2V6z"/><path d="M2 9l2.5 11h15l2.5-11H2z"/></svg>` },
+            { name: "Download", category: "files", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v14"/><path d="M6 11l6 6 6-6"/><path d="M3 17v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/></svg>` },
+            { name: "Upload", category: "files", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V2"/><path d="M6 8l6-6 6 6"/><path d="M3 17v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/></svg>` },
+            { name: "Cloud", category: "files", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 18H6a6 6 0 0 1-.5-12A8 8 0 0 1 21 10a5 5 0 0 1-2 8z"/></svg>` },
+            { name: "Archive", category: "files", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="7" rx="2"/><path d="M2 9v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9"/><path d="M10 14h4"/></svg>` },
+            { name: "Clipboard", category: "files", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 2h2a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h2"/><rect x="7" y="1" width="10" height="5" rx="2"/></svg>` },
+
+            // Interface
+            { name: "Settings", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.5"/><path d="M12 1v4"/><path d="M12 19v4"/><path d="M3.5 3.5l3 3"/><path d="M17.5 17.5l3 3"/><path d="M1 12h4"/><path d="M19 12h4"/><path d="M3.5 20.5l3-3"/><path d="M17.5 6.5l3-3"/></svg>` },
+            { name: "Search", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="8"/><path d="M16 16l6 6"/></svg>` },
+            { name: "Menu", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/></svg>` },
+            { name: "Grid", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="8" height="8" rx="2"/><rect x="14" y="2" width="8" height="8" rx="2"/><rect x="2" y="14" width="8" height="8" rx="2"/><rect x="14" y="14" width="8" height="8" rx="2"/></svg>` },
+            { name: "List", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h14"/><path d="M8 12h14"/><path d="M8 18h14"/><circle cx="3" cy="6" r="2"/><circle cx="3" cy="12" r="2"/><circle cx="3" cy="18" r="2"/></svg>` },
+            { name: "Filter", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h20l-8 9v8l-4 2V12L2 3z"/></svg>` },
+            { name: "Edit", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 2l6 6-13 13H3v-6L16 2z"/><path d="M14 4l6 6"/></svg>` },
+            { name: "Trash", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/><path d="M9 6V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>` },
+            { name: "Copy", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="14" height="14" rx="2"/><path d="M5 16H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1"/></svg>` },
+            { name: "Plus", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M3 12h18"/></svg>` },
+            { name: "Minus", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18"/></svg>` },
+            { name: "X", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5l14 14"/><path d="M19 5L5 19"/></svg>` },
+            { name: "Check", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l6 6L21 5"/></svg>` },
+            { name: "More", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="12" r="2.5"/><circle cx="12" cy="12" r="2.5"/><circle cx="20" cy="12" r="2.5"/></svg>` },
+            { name: "Sliders", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3v18"/><path d="M12 3v18"/><path d="M20 3v18"/><circle cx="4" cy="8" r="2.5"/><circle cx="12" cy="14" r="2.5"/><circle cx="20" cy="10" r="2.5"/></svg>` },
+            { name: "Eye", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-9 11-9 11 9 11 9-4 9-11 9-11-9-11-9z"/><circle cx="12" cy="12" r="4"/></svg>` },
+            { name: "Eye Off", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10 10a4 4 0 0 0 5 5"/><path d="M6 6c-2.5 2-4.5 5-5 6 2 4.5 6 9 11 9 2 0 4-.5 5.5-1.5"/><path d="M12 3c5 0 9 4.5 11 9-.5 1-1.5 2.5-3 4"/></svg>` },
+
+            // Arrows
+            { name: "Arrow Up", category: "arrows", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V4"/><path d="M4 12l8-8 8 8"/></svg>` },
+            { name: "Arrow Down", category: "arrows", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="M20 12l-8 8-8-8"/></svg>` },
+            { name: "Arrow Left", category: "arrows", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4"/><path d="M12 4l-8 8 8 8"/></svg>` },
+            { name: "Arrow Right", category: "arrows", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="M12 4l8 8-8 8"/></svg>` },
+            { name: "Chevron Up", category: "arrows", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16l8-8 8 8"/></svg>` },
+            { name: "Chevron Down", category: "arrows", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8l8 8 8-8"/></svg>` },
+            { name: "Chevron Left", category: "arrows", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4l-8 8 8 8"/></svg>` },
+            { name: "Chevron Right", category: "arrows", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4l8 8-8 8"/></svg>` },
+            { name: "Refresh", category: "arrows", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10A9 9 0 0 0 5 5"/><path d="M3 14a9 9 0 0 0 16 5"/><path d="M5 1v5h5"/><path d="M19 23v-5h-5"/></svg>` },
+            { name: "External", category: "arrows", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3H3a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-7"/><path d="M14 1h8v8"/><path d="M22 1L10 13"/></svg>` },
+            { name: "Maximize", category: "arrows", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8V4a2 2 0 0 1 2-2h4"/><path d="M16 2h4a2 2 0 0 1 2 2v4"/><path d="M22 16v4a2 2 0 0 1-2 2h-4"/><path d="M8 22H4a2 2 0 0 1-2-2v-4"/></svg>` },
+            { name: "Minimize", category: "arrows", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v5a1 1 0 0 1-1 1H2"/><path d="M22 8h-5a1 1 0 0 1-1-1V2"/><path d="M2 16h5a1 1 0 0 1 1 1v5"/><path d="M16 22v-5a1 1 0 0 1 1-1h5"/></svg>` },
+
+            // Devices
+            { name: "Monitor", category: "devices", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="2" width="22" height="15" rx="3"/><path d="M7 22h10"/><path d="M12 17v5"/></svg>` },
+            { name: "Laptop", category: "devices", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="13" rx="2"/><path d="M1 18h22l-1.5 3H2.5l-1.5-3z"/></svg>` },
+            { name: "Tablet", category: "devices", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="1" width="16" height="22" rx="3"/><path d="M9 19h6"/></svg>` },
+            { name: "Smartphone", category: "devices", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="1" width="14" height="22" rx="3"/><path d="M10 19h4"/></svg>` },
+            { name: "Watch", category: "devices", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="3"/><path d="M8 5V2h8v3"/><path d="M8 19v3h8v-3"/><path d="M12 8v4l2 2"/></svg>` },
+            { name: "Wifi", category: "devices", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 8c6-5 16-5 22 0"/><path d="M5 12c4-4 10-4 14 0"/><path d="M9 16c2-2 4-2 6 0"/><circle cx="12" cy="20" r="2"/></svg>` },
+            { name: "Bluetooth", category: "devices", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12-6 6V0l6 6L6 18"/></svg>` },
+            { name: "Battery", category: "devices", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="19" height="12" rx="2"/><path d="M20 10h3v4h-3"/><path d="M5 10v4"/><path d="M9 10v4"/></svg>` },
+            { name: "Printer", category: "devices", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8V2h14v6"/><rect x="2" y="8" width="20" height="10" rx="2"/><path d="M5 18v4h14v-4"/><circle cx="6" cy="12" r="1.5"/></svg>` },
+            { name: "Headphones", category: "devices", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13v-2a9 9 0 0 1 18 0v2"/><rect x="1" y="13" width="5" height="8" rx="2"/><rect x="18" y="13" width="5" height="8" rx="2"/></svg>` },
+
+            // Shapes
+            { name: "Heart", category: "shapes", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5C12 5 9 1 5 1.5C1 2 0 6.5 1.5 10C3 13.5 12 22 12 22s9-8.5 10.5-12c1.5-3.5.5-8-4-8.5C15 1 12 5 12 5z"/></svg>` },
+            { name: "Star", category: "shapes", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1l3.5 8h8l-6 5 2 8L12 18l-7.5 4 2-8-6-5h8L12 1z"/></svg>` },
+            { name: "Circle", category: "shapes", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>` },
+            { name: "Square", category: "shapes", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="3"/></svg>` },
+            { name: "Triangle", category: "shapes", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 18H2L12 2z"/></svg>` },
+            { name: "Hexagon", category: "shapes", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1l9 5v10l-9 6-9-6V6l9-5z"/></svg>` },
+            { name: "Zap", category: "shapes", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 1L3 14h8l-1 9 11-13h-8l1-9z"/></svg>` },
+            { name: "Flame", category: "shapes", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 23c-5 0-8-4-8-8 0-4 2.5-6 4-8 1 2.5 2.5 4 5 4 0-5 2-10 4-10-1 5 4 7 4 11 0 7-4 11-9 11z"/><path d="M12 23c-2 0-3.5-1.5-3.5-4 0-2 2-3.5 3.5-5 1.5 1.5 3.5 3 3.5 5 0 2.5-1.5 4-3.5 4z"/></svg>` },
+
+            // Status
+            { name: "Info", category: "status", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-5"/><circle cx="12" cy="8" r="1" fill="currentColor"/></svg>` },
+            { name: "Alert Circle", category: "status", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 7v5"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>` },
+            { name: "Alert Triangle", category: "status", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 18H2L12 2z"/><path d="M12 9v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>` },
+            { name: "Help", category: "status", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9 8.5c0-2 1.5-3.5 3-3.5s3 1 3 3c0 2.5-3 3-3 5"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>` },
+            { name: "Check Circle", category: "status", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M7 12l4 4 6-7"/></svg>` },
+            { name: "X Circle", category: "status", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 8l8 8"/><path d="M16 8l-8 8"/></svg>` },
+            { name: "Loader", category: "status", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v5"/><path d="M12 18v5"/><path d="M3.5 3.5l3.5 3.5"/><path d="M17 17l3.5 3.5"/><path d="M1 12h5"/><path d="M18 12h5"/><path d="M3.5 20.5l3.5-3.5"/><path d="M17 7l3.5-3.5"/></svg>` },
+            { name: "Activity", category: "status", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h5l3-10 4 20 3-10h5"/></svg>` },
+
+            // Weather
+            { name: "Sun", category: "weather", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v3"/><path d="M12 20v3"/><path d="M3.5 3.5l2 2"/><path d="M18.5 18.5l2 2"/><path d="M1 12h3"/><path d="M20 12h3"/><path d="M3.5 20.5l2-2"/><path d="M18.5 5.5l2-2"/></svg>` },
+            { name: "Moon", category: "weather", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12.8A10 10 0 1 1 11.2 2c0 6 5 11 10.8 10.8z"/></svg>` },
+            { name: "Cloud", category: "weather", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 18H6a6 6 0 0 1-.5-12A8 8 0 0 1 21 10a5 5 0 0 1-2 8z"/></svg>` },
+            { name: "Cloud Rain", category: "weather", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14H6a6 6 0 0 1-.5-12A8 8 0 0 1 21 6a5 5 0 0 1-2 8z"/><path d="M7 18v3"/><path d="M12 18v3"/><path d="M17 18v3"/></svg>` },
+            { name: "Snow", category: "weather", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14H6a6 6 0 0 1-.5-12A8 8 0 0 1 21 6a5 5 0 0 1-2 8z"/><circle cx="7" cy="19" r="1.5"/><circle cx="12" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg>` },
+            { name: "Wind", category: "weather", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4a3 3 0 1 1 3 3H1"/><path d="M18 9a3 3 0 1 0-3 3H1"/><path d="M15 18a3 3 0 1 1 3 3H1"/></svg>` },
+            { name: "Thermometer", category: "weather", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14V4a2 2 0 1 0-4 0v10a5 5 0 1 0 4 0z"/><circle cx="12" cy="17" r="1.5"/></svg>` },
+            { name: "Droplet", category: "weather", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-4 5-7 9-7 12a7 7 0 0 0 14 0c0-3-3-7-7-12z"/></svg>` },
+
+            // Commerce
+            { name: "Cart", category: "commerce", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2h3l3.5 13h11l3.5-9H6.5"/><circle cx="9" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/></svg>` },
+            { name: "Bag", category: "commerce", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18l-1.5 15H4.5L3 6z"/><path d="M7 6V4a5 5 0 0 1 10 0v2"/></svg>` },
+            { name: "Credit Card", category: "commerce", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="22" height="18" rx="3"/><path d="M1 10h22"/><path d="M5 15h5"/></svg>` },
+            { name: "Dollar", category: "commerce", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M7 5c0-1 2-3 5-3s5 1 5 3.5c0 3-4 4-5 4"/><path d="M17 19c0 1-2 3-5 3s-5-1-5-3.5c0-3 4-4 5-4"/></svg>` },
+            { name: "Gift", category: "commerce", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M12 7v15"/><path d="M2 12h20"/><path d="M7 7c-2.5 0-4-2.5-1.5-5S10 2 12 5c2-3 4.5-5.5 7-3s1 5-1.5 5"/></svg>` },
+            { name: "Tag", category: "commerce", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 1L1 13l10 10L22 12V1H13z"/><circle cx="17" cy="6" r="2.5"/></svg>` },
+            { name: "Percent", category: "commerce", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4L4 20"/><circle cx="6" cy="6" r="4"/><circle cx="18" cy="18" r="4"/></svg>` },
+            { name: "Bookmark", category: "commerce", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v19l-8-5-8 5V3z"/></svg>` },
+            { name: "Award", category: "commerce", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><path d="M7 13l-2 10 7-4 7 4-2-10"/></svg>` },
+
+            // Development
+            { name: "Code", category: "development", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5L1 12l6 7"/><path d="M17 5l6 7-6 7"/></svg>` },
+            { name: "Terminal", category: "development", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="2" width="22" height="20" rx="3"/><path d="M5 8l4 4-4 4"/><path d="M12 16h7"/></svg>` },
+            { name: "Database", category: "development", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.5 4 3 9 3s9-1.5 9-3V5"/><path d="M3 12c0 1.5 4 3 9 3s9-1.5 9-3"/></svg>` },
+            { name: "Server", category: "development", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="9" rx="2"/><rect x="2" y="13" width="20" height="9" rx="2"/><circle cx="6" cy="6.5" r="1.5"/><circle cx="6" cy="17.5" r="1.5"/></svg>` },
+            { name: "Git Branch", category: "development", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="4" r="3"/><circle cx="6" cy="20" r="3"/><circle cx="18" cy="9" r="3"/><path d="M6 7v10"/><path d="M15 9H9c-1.5 0-3 1.5-3 3"/></svg>` },
+            { name: "Git Commit", category: "development", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M1 12h6"/><path d="M17 12h6"/></svg>` },
+            { name: "Link", category: "development", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 15a5 5 0 0 0 7-.5l4-4a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M15 9a5 5 0 0 0-7 .5l-4 4a5 5 0 0 0 7 7l1.5-1.5"/></svg>` },
+            { name: "Hash", category: "development", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 2l-2 20"/><path d="M17 2l-2 20"/></svg>` },
+            { name: "Package", category: "development", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7l10-5 10 5v10l-10 5-10-5V7z"/><path d="M2 7l10 5 10-5"/><path d="M12 12v10"/></svg>` },
+            { name: "Cpu", category: "development", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="7" y="7" width="10" height="10" rx="1"/><path d="M9 1v3"/><path d="M15 1v3"/><path d="M9 20v3"/><path d="M15 20v3"/><path d="M1 9h3"/><path d="M1 15h3"/><path d="M20 9h3"/><path d="M20 15h3"/></svg>` },
+            { name: "Clock", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 5v7l5 3"/></svg>` },
+            { name: "Calendar", category: "interface", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="19" rx="3"/><path d="M7 1v4"/><path d="M17 1v4"/><path d="M2 10h20"/></svg>` }
+        ];
+
+        let currentCategory = 'all';
+        const iconsGrid = document.getElementById('iconsGrid');
+        const searchInput = document.getElementById('search');
+        const toast = document.getElementById('toast');
+        const categoryList = document.getElementById('categoryList');
+        const currentCategoryText = document.getElementById('currentCategory');
+
+        function getCategoryCount(categoryId) {
+            if (categoryId === 'all') return icons.length;
+            return icons.filter(icon => icon.category === categoryId).length;
+        }
+
+        function renderCategories() {
+            categoryList.innerHTML = categories.map(cat => `
+                <li class="category-item ${cat.id === currentCategory ? 'active' : ''}" data-category="${cat.id}">
+                    <span>${cat.name}</span>
+                    <span class="count">${getCategoryCount(cat.id)}</span>
+                </li>
+            `).join('');
+
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    currentCategory = item.dataset.category;
+                    searchInput.value = '';
+                    renderCategories();
+                    renderIcons();
+                    updateCategoryTitle();
+                });
+            });
+        }
+
+        function updateCategoryTitle() {
+            const cat = categories.find(c => c.id === currentCategory);
+            currentCategoryText.textContent = cat ? `${cat.name} Icons` : 'All Icons';
+        }
+
+        function renderIcons(filter = '') {
+            let filteredIcons = icons;
+
+            if (currentCategory !== 'all') {
+                filteredIcons = filteredIcons.filter(icon => icon.category === currentCategory);
+            }
+
+            if (filter) {
+                filteredIcons = filteredIcons.filter(icon =>
+                    icon.name.toLowerCase().includes(filter.toLowerCase())
+                );
+            }
+
+            if (filteredIcons.length === 0) {
+                iconsGrid.innerHTML = '<div class="no-results">No icons found</div>';
+                return;
+            }
+
+            iconsGrid.innerHTML = filteredIcons.map((icon, index) => `
+                <div class="icon-card" data-index="${icons.indexOf(icon)}">
+                    ${icon.svg}
+                    <span>${icon.name}</span>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('.icon-card').forEach(card => {
+                card.addEventListener('click', () => copyIcon(card));
+            });
+        }
+
+        async function copyIcon(card) {
+            const index = parseInt(card.dataset.index);
+            const icon = icons[index];
+
+            try {
+                await navigator.clipboard.writeText(icon.svg);
+
+                card.classList.add('copied');
+                showToast(`${icon.name} icon copied!`);
+
+                setTimeout(() => {
+                    card.classList.remove('copied');
+                }, 1000);
+            } catch (err) {
+                showToast('Failed to copy');
+            }
+        }
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            renderIcons(e.target.value);
+        });
+
+        renderCategories();
+        renderIcons();
+        updateCategoryTitle();
+    </script>
+</body>
+</html>

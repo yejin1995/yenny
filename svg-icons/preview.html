@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icon Style Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 40px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+        }
+        .comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .style-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .style-card h2 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        .style-card p {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        .icons-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .icon-item {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        .icon-item svg {
+            width: 32px;
+            height: 32px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #e0e7ff;
+            color: #4338ca;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-bottom: 15px;
+        }
+        .badge.original {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <h1>Icon Style Comparison</h1>
+
+    <div class="comparison">
+        <!-- Original Feather Style -->
+        <div class="style-card">
+            <span class="badge original">Original (Feather)</span>
+            <h2>Feather Icons Style</h2>
+            <p>기존 스타일 - 참고용으로만 사용</p>
+            <div class="icons-row">
+                <div class="icon-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </div>
+                <div class="icon-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <div class="icon-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </div>
+                <div class="icon-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Style A: Soft Rounded -->
+        <div class="style-card">
+            <span class="badge">Style A</span>
+            <h2>Soft Rounded</h2>
+            <p>더 둥글고 부드러운 형태, 굵은 선(2.5px), 모서리가 더 라운드됨</p>
+            <div class="icons-row">
+                <div class="icon-item">
+                    <!-- Home: 둥근 지붕, 아치형 문 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 10.5C4 10.5 7 4 12 4s8 6.5 8 6.5V19a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10.5z"></path>
+                        <path d="M12 21v-6a2 2 0 0 0-2-2h0a2 2 0 0 0-2 2v6"></path>
+                    </svg>
+                </div>
+                <div class="icon-item">
+                    <!-- User: 더 둥근 머리, 넓은 어깨 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="8" r="5"></circle>
+                        <path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"></path>
+                    </svg>
+                </div>
+                <div class="icon-item">
+                    <!-- Heart: 더 통통한 하트 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 6C12 6 9 2 5.5 2.5C2 3 1 7 2.5 10C4 13 12 21 12 21C12 21 20 13 21.5 10C23 7 22 3 18.5 2.5C15 2 12 6 12 6Z"></path>
+                    </svg>
+                </div>
+                <div class="icon-item">
+                    <!-- Search: pill 모양 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="10" cy="10" r="7"></circle>
+                        <path d="M15.5 15.5L21 21"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Style B: Geometric -->
+        <div class="style-card">
+            <span class="badge">Style B</span>
+            <h2>Geometric Minimal</h2>
+            <p>기하학적 형태, 단순한 도형 조합, 균형잡힌 비율</p>
+            <div class="icons-row">
+                <div class="icon-item">
+                    <!-- Home: 사각형 + 삼각형 조합 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="5" y="11" width="14" height="10" rx="1"></rect>
+                        <path d="M3 12l9-8 9 8"></path>
+                        <rect x="10" y="15" width="4" height="6"></rect>
+                    </svg>
+                </div>
+                <div class="icon-item">
+                    <!-- User: 원 + 반원 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="7" r="4"></circle>
+                        <rect x="5" y="14" width="14" height="8" rx="4"></rect>
+                    </svg>
+                </div>
+                <div class="icon-item">
+                    <!-- Heart: 두 원 + 삼각형 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="8" cy="9" r="4"></circle>
+                        <circle cx="16" cy="9" r="4"></circle>
+                        <path d="M4.5 11L12 21l7.5-10"></path>
+                    </svg>
+                </div>
+                <div class="icon-item">
+                    <!-- Search: 정사각형 돋보기 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="4" y="4" width="12" height="12" rx="3"></rect>
+                        <path d="M14 14l6 6"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Style C: Double Line -->
+        <div class="style-card">
+            <span class="badge">Style C</span>
+            <h2>Double Line</h2>
+            <p>이중선 효과, 두께 대비로 깊이감 표현</p>
+            <div class="icons-row">
+                <div class="icon-item">
+                    <!-- Home: 이중선 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 10l7-6 7 6v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V10z" stroke-width="1.5"></path>
+                        <path d="M3 11l9-8 9 8" stroke-width="2.5"></path>
+                        <path d="M9 21v-7h6v7" stroke-width="1.5"></path>
+                    </svg>
+                </div>
+                <div class="icon-item">
+                    <!-- User: 이중선 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="7" r="3" stroke-width="1.5"></circle>
+                        <circle cx="12" cy="7" r="5" stroke-width="2.5"></circle>
+                        <path d="M5 21c0-4 3-7 7-7s7 3 7 7" stroke-width="2.5"></path>
+                    </svg>
+                </div>
+                <div class="icon-item">
+                    <!-- Heart: 이중선 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 7c-1-2-3-4-6-4-3.5 0-5 3-5 5.5 0 5 11 12.5 11 12.5s11-7.5 11-12.5c0-2.5-1.5-5.5-5-5.5-3 0-5 2-6 4z" stroke-width="2.5"></path>
+                        <path d="M12 9c-.7-1.3-2-2.5-4-2.5-2 0-3 1.5-3 3 0 3 7 8 7 8s7-5 7-8c0-1.5-1-3-3-3-2 0-3.3 1.2-4 2.5z" stroke-width="1"></path>
+                    </svg>
+                </div>
+                <div class="icon-item">
+                    <!-- Search: 이중선 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="10" cy="10" r="5" stroke-width="1.5"></circle>
+                        <circle cx="10" cy="10" r="7" stroke-width="2.5"></circle>
+                        <path d="M16 16l5 5" stroke-width="2.5"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Style D: Offset -->
+        <div class="style-card">
+            <span class="badge">Style D</span>
+            <h2>Offset Shadow</h2>
+            <p>오프셋 그림자 효과, 입체감 있는 레트로 스타일</p>
+            <div class="icons-row">
+                <div class="icon-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <!-- Shadow -->
+                        <path d="M5 11l7-6 7 6v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V11z" stroke="#ccc" stroke-width="2" transform="translate(2, 2)"></path>
+                        <!-- Main -->
+                        <path d="M5 11l7-6 7 6v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V11z" stroke="#333" stroke-width="2" fill="white"></path>
+                        <rect x="9" y="14" width="4" height="6" stroke="#333" stroke-width="2" fill="white"></rect>
+                    </svg>
+                </div>
+                <div class="icon-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <!-- Shadow -->
+                        <circle cx="14" cy="9" r="4" stroke="#ccc" stroke-width="2"></circle>
+                        <path d="M7 23c0-4 3-7 7-7s7 3 7 7" stroke="#ccc" stroke-width="2" transform="translate(2, 2)"></path>
+                        <!-- Main -->
+                        <circle cx="12" cy="7" r="4" stroke="#333" stroke-width="2" fill="white"></circle>
+                        <path d="M5 21c0-4 3-7 7-7s7 3 7 7" stroke="#333" stroke-width="2"></path>
+                    </svg>
+                </div>
+                <div class="icon-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <!-- Shadow -->
+                        <path d="M12 6c-1-2-3-3-5-3-3 0-5 2.5-5 5 0 4.5 10 11 10 11s10-6.5 10-11c0-2.5-2-5-5-5-2 0-4 1-5 3z" stroke="#ccc" stroke-width="2" transform="translate(2, 2)"></path>
+                        <!-- Main -->
+                        <path d="M12 6c-1-2-3-3-5-3-3 0-5 2.5-5 5 0 4.5 10 11 10 11s10-6.5 10-11c0-2.5-2-5-5-5-2 0-4 1-5 3z" stroke="#333" stroke-width="2" fill="white"></path>
+                    </svg>
+                </div>
+                <div class="icon-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <!-- Shadow -->
+                        <circle cx="12" cy="12" r="6" stroke="#ccc" stroke-width="2"></circle>
+                        <path d="M18 18l4 4" stroke="#ccc" stroke-width="2" transform="translate(2, 2)"></path>
+                        <!-- Main -->
+                        <circle cx="10" cy="10" r="6" stroke="#333" stroke-width="2" fill="white"></circle>
+                        <path d="M16 16l4 4" stroke="#333" stroke-width="2"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Style E: Playful -->
+        <div class="style-card">
+            <span class="badge">Style E</span>
+            <h2>Playful Organic</h2>
+            <p>손으로 그린 듯한 유기적 곡선, 친근한 느낌</p>
+            <div class="icons-row">
+                <div class="icon-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 21V10c0 0 0-1 1-2l6-5c1-0.5 2-0.5 3 0l6 5c1 1 1 2 1 2v11c0 1-1 1-1 1H5c-1 0-1-1-1-1z"></path>
+                        <path d="M9 21v-5c0-1 0.5-2 1.5-2h3c1 0 1.5 1 1.5 2v5"></path>
+                    </svg>
+                </div>
+                <div class="icon-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <ellipse cx="12" cy="7" rx="5" ry="4.5"></ellipse>
+                        <path d="M4 21c0.5-5 4-8 8-8s7.5 3 8 8"></path>
+                    </svg>
+                </div>
+                <div class="icon-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 5c-0.5-1.5-2.5-3-5-3C3 2 1 5 1.5 8c0.5 4 10.5 13 10.5 13s10-9 10.5-13c0.5-3-1.5-6-5.5-6-2.5 0-4.5 1.5-5 3z"></path>
+                    </svg>
+                </div>
+                <div class="icon-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <ellipse cx="10" cy="10" rx="7" ry="6.5"></ellipse>
+                        <path d="M15 15c1 1 5 5 6 6"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

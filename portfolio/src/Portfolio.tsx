@@ -148,8 +148,8 @@ export default function Portfolio() {
               ))}
             </nav>
 
-            {/* Social icon buttons */}
-            <div className="flex items-center gap-2.5">
+            {/* Social icon buttons — desktop only; mobile icons appear below heading */}
+            <div className="hidden md:flex items-center gap-2.5">
               {SOCIAL_NAV.map(({ Icon, href, label }) => (
                 <a
                   key={label}
@@ -271,7 +271,7 @@ export default function Portfolio() {
       <section className="bg-background py-20 md:py-28 px-6 md:px-10 lg:px-14">
         <div className="max-w-[1831px] mx-auto">
           {/* Section header */}
-          <div className="flex items-end justify-between mb-14 md:mb-18 gap-6">
+          <div className="flex items-end justify-between mb-14 md:mb-20 gap-6">
             {/* Left — section heading */}
             <div>
               <span className="font-condiment text-neon text-3xl md:text-4xl leading-none block mb-1">
